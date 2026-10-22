@@ -1,0 +1,143 @@
+<title>H2 MEO資料ポータル</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: 1カラムの社内ポータル。上部に検索、カテゴリ別のリンク一覧 */
+:root{
+  --bg:#f1f2f4; --surface:#ffffff; --line:#d9dce1; --fg:#24272c; --muted:#6b717a;
+  --accent:#4a5361; --accent-soft:#e6e8ec; --chip:#eceef1;
+  --font:"Meiryo","メイリオ","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  /* カテゴリ色（グレー基調に合う落ち着いたトーン） */
+  --c-internal:#3d6a9e; --cs-internal:#e3ecf6;
+  --c-proposal:#2f7d62; --cs-proposal:#e0f0e9;
+  --c-manual:#a8661c;   --cs-manual:#f6ead9;
+  --c-site:#6b4f9a;     --cs-site:#ece6f5;
+  --c-tool:#a3434f;     --cs-tool:#f5e2e4;
+  --c-company:#2b7a8a;  --cs-company:#dff0f3;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1b1d21; --surface:#24272c; --line:#363a41; --fg:#e7e9ec; --muted:#9aa0a9;
+  --accent:#c3c9d2; --accent-soft:#2e3238; --chip:#30343a; color-scheme:dark;
+  --c-internal:#7fa9d9; --cs-internal:#26313d;
+  --c-proposal:#6cc3a0; --cs-proposal:#22332c;
+  --c-manual:#e0a660;   --cs-manual:#3a2f22;
+  --c-site:#ad94d8;     --cs-site:#2f2a3b;
+  --c-tool:#e08791;     --cs-tool:#3a2729;
+  --c-company:#6ec0cf;  --cs-company:#213238}}
+:root[data-theme="dark"]{
+  --bg:#1b1d21; --surface:#24272c; --line:#363a41; --fg:#e7e9ec; --muted:#9aa0a9;
+  --accent:#c3c9d2; --accent-soft:#2e3238; --chip:#30343a; color-scheme:dark;
+  --c-internal:#7fa9d9; --cs-internal:#26313d;
+  --c-proposal:#6cc3a0; --cs-proposal:#22332c;
+  --c-manual:#e0a660;   --cs-manual:#3a2f22;
+  --c-site:#ad94d8;     --cs-site:#2f2a3b;
+  --c-tool:#e08791;     --cs-tool:#3a2729;
+  --c-company:#6ec0cf;  --cs-company:#213238}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 56px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+header{display:flex;flex-direction:column;gap:6px}
+.org{font-size:12px;letter-spacing:.12em;color:var(--muted)}
+h1{font-size:24px;margin:0;font-weight:700;text-wrap:balance}
+.lead{color:var(--muted);margin:0}
+.search{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.search input{flex:1 1 260px;min-width:0;font:inherit;padding:10px 14px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg)}
+.search input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{font:inherit;font-size:12px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer}
+.filters button{--c:var(--accent);display:inline-flex;align-items:center;gap:6px}
+.filters button .dot{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.filters button[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:var(--surface)}
+.filters button[aria-pressed="true"] .dot{background:var(--surface)}
+.filters button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section{display:flex;flex-direction:column;gap:10px}
+section h2{font-size:14px;margin:0;color:var(--c);letter-spacing:.08em;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--c);padding-bottom:6px}
+section h2::before{content:"";width:10px;height:10px;border-radius:2px;background:var(--c)}
+section h2 .count{font-size:11px;font-weight:400;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+a.card{display:flex;flex-direction:column;gap:6px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:8px;color:var(--fg);text-decoration:none;min-width:0;transition:border-color .15s,background .15s}
+a.card:hover{border-color:var(--c);background:var(--cs)}
+a.card:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.name{font-weight:700;font-size:15px}
+.tag{font-size:11px;padding:2px 8px;border-radius:4px;background:var(--cs);color:var(--c);font-weight:700;white-space:nowrap}
+.desc{color:var(--muted);font-size:12.5px;margin:0}
+.url{font-size:11px;color:var(--muted);overflow-wrap:anywhere;opacity:.85}
+.empty{color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:8px}
+footer{font-size:11px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){a.card{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="org">H2technology ／ MEO・AIO事業部</div>
+    <h1>MEO資料ポータル</h1>
+    <p class="lead">社内資料・提案資料・自社サービスサイトへのリンク集です。カードをクリックすると新しいタブで開きます。</p>
+  </header>
+
+  <div class="search">
+    <input id="q" type="search" placeholder="資料名・キーワードで検索（例：AIO、口コミ、代理店）" aria-label="資料を検索">
+    <div class="filters" id="filters" role="group" aria-label="カテゴリで絞り込み"></div>
+  </div>
+
+  <main id="list" style="display:flex;flex-direction:column;gap:28px"></main>
+
+  <footer>社内限定。リンク先の追加・変更はこのページの管理者まで。</footer>
+</div>
+
+<script>
+const CATS=[
+  {id:"company",label:"会社情報"},
+  {id:"internal",label:"社内管理"},
+  {id:"proposal",label:"提案資料"},
+  {id:"manual",label:"マニュアル"},
+  {id:"site",label:"自社サービスサイト"},
+  {id:"tool",label:"ツール"}
+];
+const ITEMS=[
+  {cat:"company",name:"会社サイト",tag:"公式",desc:"H2technology株式会社のコーポレートサイト",url:"https://h2technology.jp/"},
+  {cat:"company",name:"会社のGBP",tag:"Google",desc:"H2technologyのGoogleビジネスプロフィール（検索結果）",url:"https://www.google.com/search?q=H2technology"},
+  {cat:"internal",name:"週報データ",tag:"週報",desc:"SS事業部の営業ダッシュボード。週次の活動・数値を確認",url:"https://nanbara-cloud.github.io/h2t.syuhou/ss_report_v4.html"},
+  {cat:"internal",name:"インセンティブ",tag:"社内",desc:"インセンティブ制度・算定の確認用",url:"https://claude.ai/artifact/Ge59CqgfVJb5xM9oKTVJ6c"},
+  {cat:"proposal",name:"AIO",tag:"LP",desc:"MEO×AIO提案LP。AI検索最適化の説明資料",url:"https://nanbara-cloud.github.io/AIO_H2/AIO.html"},
+  {cat:"proposal",name:"AIO スライド版",tag:"スライド",desc:"AIO提案のプレゼン用スライド",url:"https://nanbara-cloud.github.io/AIO_slides/AIO_slides.html"},
+  {cat:"proposal",name:"Mappy＋",tag:"LP",desc:"Mappy＋ツールの紹介LP",url:"https://nanbara-cloud.github.io/Mappyplus/mappy_plus_lp.html"},
+  {cat:"proposal",name:"代理店制度",tag:"パートナー",desc:"代理店・パートナープログラムの概要",url:"https://nanbara-cloud.github.io/partner/partner-program-general.html"},
+  {cat:"proposal",name:"口コミ事例集",tag:"事例",desc:"口コミ獲得・返信の事例集",url:"https://claude.ai/public/artifacts/740fa74d-603a-4cee-8205-4f5a9de4729f"},
+  {cat:"manual",name:"SNS連携マニュアル",tag:"Mappy",desc:"MappyとSNSの連携手順",url:"https://nanbara-cloud.github.io/SNS/mappy_sns_manual_v2.html"},
+  {cat:"site",name:"MEOサービスサイト",tag:"smart-meo",desc:"MEO対策サービスの公式サイト",url:"https://smart-meo.com/"},
+  {cat:"site",name:"Mappy＋サービスサイト",tag:"smart-meo",desc:"Mappy＋の公式サービスページ",url:"https://smart-meo.com/mappy-plus/"},
+  {cat:"site",name:"MEO times",tag:"メディア",desc:"MEO・ローカル検索の情報メディア",url:"https://www.meo-times.com/"},
+  {cat:"site",name:"店舗紹介.com",tag:"メディア",desc:"店舗紹介ポータルサイト",url:"https://tempo-shoukai.com/"},
+  {cat:"tool",name:"サイト最適化チェック",tag:"診断",desc:"サイトがAI検索向けに最適化されているかをチェック",url:"https://open-to-ai.vercel.app/"}
+];
+let active="all";
+const $=s=>document.querySelector(s);
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function renderFilters(){
+  const opts=[{id:"all",label:"すべて"},...CATS];
+  $("#filters").innerHTML=opts.map(o=>{
+    const st=o.id==="all"?"":` style="--c:var(--c-${o.id})"`;
+    const dot=o.id==="all"?"":`<span class="dot"></span>`;
+    return `<button type="button" data-id="${o.id}" aria-pressed="${o.id===active}"${st}>${dot}${o.label}</button>`;
+  }).join("");
+}
+function render(){
+  const q=$("#q").value.trim().toLowerCase();
+  const hit=i=>(active==="all"||i.cat===active)&&(!q||(i.name+i.tag+i.desc+i.url).toLowerCase().includes(q));
+  let html="";
+  for(const c of CATS){
+    const list=ITEMS.filter(i=>i.cat===c.id&&hit(i));
+    if(!list.length) continue;
+    html+=`<section style="--c:var(--c-${c.id});--cs:var(--cs-${c.id})"><h2>${c.label}<span class="count">${list.length}件</span></h2><div class="grid">`+
+      list.map(i=>`<a class="card" href="${esc(i.url)}" target="_blank" rel="noopener">
+        <div class="row"><span class="name">${esc(i.name)}</span><span class="tag">${esc(i.tag)}</span></div>
+        <p class="desc">${esc(i.desc)}</p><span class="url">${esc(i.url.replace(/^https?:\/\//,""))}</span></a>`).join("")+
+      `</div></section>`;
+  }
+  $("#list").innerHTML=html||`<div class="empty">該当する資料がありません。検索語を変えてください。</div>`;
+}
+$("#filters").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;active=b.dataset.id;renderFilters();render();});
+$("#q").addEventListener("input",render);
+renderFilters();render();
+</script>
